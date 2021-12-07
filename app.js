@@ -1,8 +1,14 @@
 //App.js
 const express = require('express');
 const app = express();
-//Socket.io
 const server = require('http').Server(app);
+
+//Socket.io
+const io = require('socket.io')(server);
+io.on("connection", (socket) => {
+    console.log("New user connected");
+    require('./sockets/chat.js')(io, socket);
+});
 
 //Express View Engine for handlebars
 const exphbs = require('express-handlebars');
@@ -11,6 +17,8 @@ var hbs = exphbs.create({
 });
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
+//Establish public folder
+app.use('/public', express.static('public'));
 
 //Routes
 app.get('/', (req,res) => {
